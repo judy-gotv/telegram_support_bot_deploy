@@ -94,7 +94,19 @@ Telegram 工单机器人：用户私聊 bot 提交问题 / 申请解封，管理
 - `/telegram/status?secret=xxx` — 查看 bot 信息与 Webhook 状态
 - `POST /telegram/webhook` — Telegram 消息回调（仅处理私聊）
 
-### 部署步骤
+### 部署步骤（网页后台，推荐）
+
+1. 打开 Cloudflare Dashboard → Workers → **Create an app** → 选「从 Hello World! 开始」
+2. 点进 Worker → **Edit code**，把 `index.js` 的代码粘贴进去 → **Save and deploy**
+3. 进入该 Worker 的 **Settings → Variables and Secrets**，添加环境变量：
+   - `BOT_TOKEN`（Secret 类型）
+   - `ADMIN_CHAT_ID`
+   - `SETUP_SECRET`（Secret 类型，可选）
+   - `QUNID`（可选，自动解封用）
+4. 浏览器访问 `https://<你的Worker域名>/telegram/setup?secret=你的SETUP_SECRET`，设置 Webhook
+5. 访问 `https://<你的Worker域名>/telegram/status?secret=你的SETUP_SECRET` 确认状态正常
+
+### 部署步骤（命令行 wrangler，备选）
 
 ```bash
 # 1. 安装 wrangler 并登录
