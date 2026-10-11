@@ -77,7 +77,7 @@ Telegram 工单机器人：用户私聊 bot 提交问题 / 申请解封，管理
 
      ```text
      已为你自动解封，请重新入群
-     点击入群：@AptvPlayer
+     点击入群：@Git_IPTV
      ```
 
      管理员收到一条"已自动解封"记录，全程无需手动操作
@@ -104,7 +104,7 @@ Telegram 工单机器人：用户私聊 bot 提交问题 / 申请解封，管理
 | `TELEGRAM_SECRET_TOKEN` | 否 | Webhook 校验密钥 |
 | `SETUP_SECRET` | 否 | `/telegram/setup` 与 `/telegram/status` 接口的访问密钥 |
 | `QUNID` | 否 | 绑定的群组 ID（例如 `-1002176362246`），用于 `/unban` 自动解封；不设置则走手动流程 |
-| `QUNAME` | 否 | 绑定的群 @用户名（例如 `AptvPlayer`，可不带 @）；不填则用 `QUNID` 自动获取 |
+| `QUNAME` | 否 | 绑定的群 @用户名（例如 `Git_IPTV`，可不带 @）；不填则用 `QUNID` 自动获取 |
 
 ### 接口
 
