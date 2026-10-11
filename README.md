@@ -62,16 +62,34 @@ Telegram 工单机器人：用户私聊 bot 提交问题 / 申请解封，管理
 
 ### `/unban` 自动解封（仅 JS 版，需配置 QUNID）
 
-用户发送 `/unban` 后：
+用户发送 `/unban` 后，bot 先弹出确认按钮：
+
+```text
+确定要申请解封吗？
+[ ✅ 确认 ]
+```
+
+用户点击「✅ 确认」后才真正执行解封（按钮回调走 `callback_query`）：
 
 1. 未设置 `QUNID` → 通知管理员手动处理
 2. 已设置 `QUNID` → bot 查询该用户在绑定群中的状态：
-   - 被封禁（kicked）→ **自动解封**，用户收到"已自动为你解除封禁"，管理员收到一条"已自动解封"记录，全程无需手动操作
+   - 被封禁（kicked）→ **自动解封**，用户收到：
+
+     ```text
+     已为你自动解封，请重新入群
+     点击入群：@AptvPlayer
+     ```
+
+     管理员收到一条"已自动解封"记录，全程无需手动操作
    - 禁言中（restricted）→ 转管理员手动解除禁言
    - 未被封禁 → 告知用户当前没有被封禁，并转管理员确认
    - 查询/解封接口失败 → 转管理员手动处理，并附带失败原因
 
+群链接规则：优先用 `QUNAME` 变量；不填则用 `QUNID` 调 `getChat` 自动获取群的 @用户名；都拿不到则只提示"已为你自动解封，请重新入群"（不带链接）。
+
 前提：bot 必须是绑定群的**管理员**且拥有「封禁用户」权限；解封后用户需自己重新加入群组。
+
+> ⚠️ 更新到此版本后，需重新访问一次 `/telegram/setup`，让 Webhook 订阅 `callback_query` 更新类型，否则确认按钮点不动。
 
 ---
 
@@ -85,7 +103,8 @@ Telegram 工单机器人：用户私聊 bot 提交问题 / 申请解封，管理
 | `ADMIN_CHAT_ID` | 是 | 管理员的 Telegram 用户 ID（数字） |
 | `TELEGRAM_SECRET_TOKEN` | 否 | Webhook 校验密钥 |
 | `SETUP_SECRET` | 否 | `/telegram/setup` 与 `/telegram/status` 接口的访问密钥 |
-| `QUNID` | 否 | 绑定的群组 ID（例如 `-1002176362246`），用于 `/unban` 自动解封 |
+| `QUNID` | 否 | 绑定的群组 ID（例如 `-1002176362246`），用于 `/unban` 自动解封；不设置则走手动流程 |
+| `QUNAME` | 否 | 绑定的群 @用户名（例如 `AptvPlayer`，可不带 @）；不填则用 `QUNID` 自动获取 |
 
 ### 接口
 
@@ -103,6 +122,7 @@ Telegram 工单机器人：用户私聊 bot 提交问题 / 申请解封，管理
    - `ADMIN_CHAT_ID`
    - `SETUP_SECRET`（Secret 类型，可选）
    - `QUNID`（可选，自动解封用）
+   - `QUNAME`（可选，群 @用户名，不填自动获取）
 4. 浏览器访问 `https://<你的Worker域名>/telegram/setup?secret=你的SETUP_SECRET`，设置 Webhook
 5. 访问 `https://<你的Worker域名>/telegram/status?secret=你的SETUP_SECRET` 确认状态正常
 
@@ -122,6 +142,7 @@ wrangler secret put ADMIN_CHAT_ID
 wrangler secret put SETUP_SECRET
 # 可选：自动解封
 wrangler secret put QUNID
+wrangler secret put QUNAME
 
 # 4. 设置 Webhook（把 <你的域名> 换成 Worker 域名）
 curl "https://<你的域名>/telegram/setup?secret=你的SETUP_SECRET"
